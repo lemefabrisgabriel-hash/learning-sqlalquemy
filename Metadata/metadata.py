@@ -1,5 +1,4 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import Session
+from sqlalchemy import MetaData, Table, Column, Integer, String, create_engine, text
 from dotenv import load_dotenv
 import os
 
@@ -9,16 +8,7 @@ url_path = os.getenv("URL_PATH")
 
 engine = create_engine(url_path, echo=True)
 
-with Session(engine) as session:
-    session.add()
-    session.add()
-
-##############################################
-
-from sqlalchemy import MetaData
 metadata_obj = MetaData()
-
-from sqlalchemy import Table, Column, Integer, String
 
 user_table = Table(
     "user_account",
@@ -27,3 +17,12 @@ user_table = Table(
     Column("name", String(30)),
     Column("fullname", String(100))
     )
+
+metadata_obj.create_all(engine)
+
+with engine.connect() as conn:
+    sql = text("SELECT * FROM user_account")
+    result = conn.execute(sql)
+    for row in result:
+        print(row)
+
